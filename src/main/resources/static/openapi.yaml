@@ -106,5 +106,61 @@ paths:
                   trading_date:
                     type: string
                     description: 체결 날짜
+                    
+  /order:
+    post:
+      summary: 새로운 주문 생성 (매도/매수)
+      description: 매도 또는 매수 주문을 생성.
+      operationId: createOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  description: 사용자 ID
+                stockId:
+                  type: string
+                  description: 주식 ID
+                order_type:
+                  type: string
+                  enum: [매도, 매수]
+                  description: 주문 타입 (매도 또는 매수)
+                quantity:
+                  type: integer
+                  description: 주문 수량
+                price:
+                  type: integer
+                  description: 주문 가격 (0이면 현재가로 설정)
+      responses:
+        '200':
+          description: 주문 처리 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  order_id:
+                    type: string
+                    description: 생성된 주문 ID
+                  result:
+                    type: string
+                    description: 주문 처리 결과 (success)
+                  message:
+                    type: string
+                    description: 주문 처리 메시지
+        '400':
+          description: 잘못된 요청 (필수 값 누락 등)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: 에러 설명
                   
   
