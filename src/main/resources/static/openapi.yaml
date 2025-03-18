@@ -16,102 +16,31 @@ paths:
             application/json:
               schema:
                 type: array
-                items :
-                  type : object
-                  properties:
-                    result:
-                      type: string
-                      description: 주문목록조회 결과 (success)
-                    order_id:
-                      type: string
-                      description: 주문 id
-                    user_id:
-                      type: string
-                      description: 주문자 id
-                    user_name:
-                      type: string
-                      description: 주문자명
-                    order_date:
-                      type: string
-                      description: 주문날짜
-                    order_type:
-                      type: integer
-                      description: 주문타입(0:매도 1:매수)
-                    order_stock:
-                      type: string
-                      description: 주문주식
-                    quantity:
-                      type: integer
-                      description: 주문량
-                    price:
-                      type: integer
-                      description: 주문가격
-                    trading_result:
-                      type: integer
-                      description: 체결결과(0:미체결 1:체결)
-                    trading_date:
-                      type: string
-                      description: 체결날짜
-                    
-                    
+                items: 
+                  $ref: '#/components/schemas/Order'
   /orders/{order_id}:
     get:
-      summary: 매도 주문 처리
-      description: 주문 ID에 해당하는 주문정보를 조회
+      summary: 특정 주문 처리
+      description: 특정 주문 ID에 해당하는 주문정보를 조회
       parameters:
       - name: order_id
         in: path
         required: true
         description: 조회할 주문 ID
         schema:
-          type: string
+          type: integer
+          example: 123456
       responses:
         '200':
           description: 주문 조회 성공
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  result:
-                    type: string
-                    description: 주문 조회 결과 (success)
-                  order_id:
-                    type: string
-                    description: 주문 ID
-                  user_id:
-                    type: string
-                    description: 주문자 ID
-                  user_name:
-                    type: string
-                    description: 주문자명
-                  order_date:
-                    type: string
-                    description: 주문 날짜
-                  order_type:
-                    type: integer
-                    description: 주문 타입
-                  order_stock:
-                    type: string
-                    description: 주문 주식
-                  quantity:
-                    type: integer
-                    description: 주문량
-                  price:
-                    type: integer
-                    description: 주문 가격
-                  trading_result:
-                    type: integer
-                    description: 체결 결과
-                  trading_date:
-                    type: string
-                    description: 체결 날짜
-                    
+                $ref: '#/components/schemas/Order'
   /order:
     post:
       summary: 새로운 주문 생성 (매도/매수)
       description: 매도 또는 매수 주문을 생성.
-      operationId: createOrder
       requestBody:
         required: true
         content:
@@ -119,22 +48,30 @@ paths:
             schema:
               type: object
               properties:
-                userId:
+                user_id:
                   type: string
-                  description: 사용자 ID
-                stockId:
+                  description: 주문자 id
+                  example: lsj1234
+                stock_code:
                   type: string
-                  description: 주식 ID
+                  description: 주문주식의 코드(티커)
+                  example: "005930"
                 order_type:
                   type: string
-                  enum: [매도, 매수]
-                  description: 주문 타입 (매도 또는 매수)
+                  description: 주문타입(매도, 매수)
+                  enum: [
+                    "sell",
+                    "buy"
+                  ]
+                  example: "sell"
                 quantity:
                   type: integer
-                  description: 주문 수량
+                  description: 주문량
+                  example: 20
                 price:
                   type: integer
-                  description: 주문 가격 (0이면 현재가로 설정)
+                  description: 주문가격
+                  example: 57000
       responses:
         '200':
           description: 주문 처리 성공
@@ -153,14 +90,138 @@ paths:
                     type: string
                     description: 주문 처리 메시지
         '400':
-          description: 잘못된 요청 (필수 값 누락 등)
+          description: 잘못된 요청_필수값 누락
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: 에러 설명
-                  
+                oneOf:
+                  - $ref: '#/components/schemas/InvalidOrderID'
+                  - $ref: '#/components/schemas/InvalidStockID'
+                  - $ref: '#/components/schemas/InvalidBalance'
+                  - $ref: '#/components/schemas/InvalidQuantity'
+                  - $ref: '#/components/schemas/InvalidPrice'
+                discriminator: 
+                  propertyName: error
+                  mapping:
+                    invalid_order_id: '#/components/schemas/InvalidOrderID'
+                    invalid_stock_id: '#/components/schemas/InvalidStockID'
+                    invalid_balance: '#/components/schemas/InvalidBalance'
+                    invalid_quantity: '#/components/schemas/InvalidQuantity'
+                    invalid_price: '#/components/schemas/InvalidPrice'
+components:
+  schemas:
+    Order:
+      type : object
+      properties:
+        order_id:
+          type: integer
+          description: 주문 id
+          example: 123456
+        user_id:
+          type: string
+          description: 주문자 id
+          example: lsj1234
+        user_name:
+          type: string
+          description: 주문자명
+          example: 이수진
+        stocks:
+          type: array
+          items :
+            $ref: '#/components/schemas/Stock'
+              
+    Stock:
+      type: object
+      properties:
+        order_date:
+          type: string
+          description: 주문날짜
+          example: "1997-07-16T10:20:30Z"
+        updated_date:
+          type: string
+          description: 주문수정날짜
+          example: "1997-07-17T11:20:30Z"
+        order_type:
+          type: string
+          description: 주문타입(매도, 매수)
+          enum: [
+            "sell",
+            "buy"
+          ]
+          example: "sell"
+        stock_code:
+          type: string
+          description: 주문주식의 코드(티커)
+          example: "005930"
+        quantity:
+          type: integer
+          description: 주문량
+          example: 20
+        price:
+          type: integer
+          description: 주문가격
+          example: 57000
+        trading_result:
+          type: string
+          description: 체결결과(미체결, 체결, 진행중)
+          enum: [
+            "notconcluded",
+            "conclusion",
+            "progress"
+            ]
+          example: "progress"
+        trading_date:
+          type: string
+          description: 체결날짜
+          example: "1997-07-17T11:20:30Z"                
+  
+    InvalidOrderID:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "invalid_order_id"
+        message:
+          type: string
+          example: "유효하지 않은 주문 id입니다."
+
+    InvalidStockID:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "invalid_stock_id"
+        message:
+          type: string
+          example: "유효하지 않은 주식 id입니다."
+
+    InvalidBalance:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "invalid_balance"
+        message:
+          type: string
+          example: "매입 금액이 부족합니다."
+
+    InvalidQuantity:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "invalid_quantity"
+        message:
+          type: string
+          example: "매도 수량이 부족합니다."
+
+    InvalidPrice:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "invalid_price"
+        message:
+          type: string
+          example: "유효하지 않은 금액입니다. "              
   
