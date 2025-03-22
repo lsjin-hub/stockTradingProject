@@ -4,6 +4,7 @@ info:
   title: Stock API
   description: 주식 주문 처리 API
   version: 1.0.0
+
 paths:
   /orders:
     get:
@@ -16,20 +17,21 @@ paths:
             application/json:
               schema:
                 type: array
-                items: 
+                items:
                   $ref: '#/components/schemas/Order'
+
   /orders/{order_id}:
     get:
       summary: 특정 주문 처리
       description: 특정 주문 ID에 해당하는 주문정보를 조회
       parameters:
-      - name: order_id
-        in: path
-        required: true
-        description: 조회할 주문 ID
-        schema:
-          type: integer
-          example: 123456
+        - name: order_id
+          in: path
+          required: true
+          description: 조회할 주문 ID
+          schema:
+            type: integer
+            example: 123456
       responses:
         '200':
           description: 주문 조회 성공
@@ -37,11 +39,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Order'
-                
+
 components:
   schemas:
     Order:
-      type : object
+      type: object
       properties:
         order_id:
           type: integer
@@ -55,14 +57,6 @@ components:
           type: string
           description: 주문자명
           example: 이수진
-        stocks:
-          type: array
-          items :
-            $ref: '#/components/schemas/Stock'
-              
-    Stock:
-      type: object
-      properties:
         order_date:
           type: string
           description: 주문날짜
@@ -71,14 +65,19 @@ components:
           type: string
           description: 주문수정날짜
           example: "1997-07-17T11:20:30Z"
+        stocks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Stock'
+
+    Stock:
+      type: object
+      properties:
         order_type:
           type: string
           description: 주문타입(매도, 매수)
-          enum: [
-            "sell",
-            "buy"
-          ]
-          example: "sell"
+          enum: [sell, buy]
+          example: sell
         stock_code:
           type: string
           description: 주문주식의 코드(티커)
@@ -94,12 +93,8 @@ components:
         trading_result:
           type: string
           description: 체결결과(미체결, 체결, 진행중)
-          enum: [
-            "notconcluded",
-            "conclusion",
-            "progress"
-            ]
-          example: "progress"
+          enum: [notconcluded, conclusion, progress]
+          example: progress
         trading_date:
           type: string
           description: 체결날짜
