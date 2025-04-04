@@ -1,8 +1,13 @@
 package com.example.stockApi.entity;
 
-import jakarta.persistence.*;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "orders")
@@ -15,6 +20,13 @@ public class OrdersEntity {
     private Integer quantity;
     private Integer price;
     private Integer status;
+    private String userId;
+    private	String userName;
+    private String orderDate;
+    private String updatedDate;
+    
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<StockEntity> stocks;
     
     public Integer getOrderId() {
 		return orderId;
@@ -49,6 +61,32 @@ public class OrdersEntity {
 	}
 	public void setStatus(Integer status) {
 		this.status = status;
+	}
+	public List<StockEntity> getStocks() { return stocks; }
+    public void setStocks(List<StockEntity> stocks) { this.stocks = stocks; }
+	public String getUserId() {
+		return userId;
+	}
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+	public String getUserName() {
+		return userName;
+	}
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+	public String getOrderDate() {
+		return orderDate;
+	}
+	public void setOrderDate(String orderDate) {
+		this.orderDate = orderDate;
+	}
+	public String getUpdatedDate() {
+		return updatedDate;
+	}
+	public void setUpdatedDate(String updatedDate) {
+		this.updatedDate = updatedDate;
 	}
 	
 }

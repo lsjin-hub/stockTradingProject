@@ -1,10 +1,12 @@
 package com.example.stockApi.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import com.example.stockApi.entity.OrdersEntity;
+import com.example.stockApi.mapper.OrdersMapper;
 import com.example.stockApi.repository.OrdersRepository;
 import com.exmaple.stockApi.dto.OrdersResponseDto;
 
@@ -17,12 +19,15 @@ public class OrdersService {
 	        this.ordersRepository = ordersRepository;
 	    }
 	    
-	    public List<OrdersEntity> getAllOrders() {
-	        return ordersRepository.findAll();
+	    public List<OrdersResponseDto> getAllOrders() {
+	    	List<OrdersEntity> entities = ordersRepository.findAll();
+	    	return OrdersMapper.toDtoList(entities);
 	    }
 
-	    public OrdersEntity  getOrderById(Integer orderId) {
-	    	return ordersRepository.findById(orderId);
+	    public OrdersResponseDto getOrderById(Integer orderId) {
+			Optional<OrdersEntity> optionalOrder = Optional.ofNullable(ordersRepository.findById(orderId));
+			OrdersEntity entity = optionalOrder.orElseThrow(() -> new RuntimeException(""+orderId));
+			return OrdersMapper.toDto(entity);
 	    }
 
 }
