@@ -1,32 +1,33 @@
 package com.example.stockApi.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.exmaple.stockApi.dto.OrderResponseDto;
+import com.example.stockApi.entity.OrdersEntity;
+import com.example.stockApi.mapper.OrdersMapper;
+import com.example.stockApi.service.OrdersService;
+import com.exmaple.stockApi.dto.OrdersResponseDto;
 
 @RestController
 public class OrdersController {
 
+	private final OrdersService ordersService;
+	
+	public OrdersController(OrdersService ordersService) {
+        this.ordersService = ordersService;
+    }
+	
 	@GetMapping("/orders")
-	public List<OrderResponseDto> getOrders() {
-		
-		List<OrderResponseDto> orders = new ArrayList<>();
-
-	    orders.add(new OrderResponseDto());
-
-	    orders.add(new OrderResponseDto());
-	    
-		return orders;
+	public List<OrdersResponseDto> getOrders() {	   
+		return ordersService.getAllOrders();
 	}
 	
 	@GetMapping("/orders/{order_id}")
-	public OrderResponseDto getOrderById(@PathVariable("order_id") Long orderId) {
-		return new OrderResponseDto();
+	public OrdersResponseDto getOrderById(@PathVariable("order_id") Integer orderId) {
+		return ordersService.getOrderById(orderId);
 	}
 
 }
