@@ -41,6 +41,16 @@ public class OrderControllerTest {
         requestDto.setQuantity(1);
         requestDto.setPrice(56000);
         
+        System.out.println("test::::userId : " + requestDto.getUserId());
+        
+        OrderResponseDto mockResponse = OrderResponseDto.builder()
+                .orderId(1)
+                .message("주문이 성공적으로 처리되었습니다.")
+                .build();
+
+        Mockito.when(orderService.createOrder(Mockito.any()))
+               .thenReturn(mockResponse);
+        
         mockMvc.perform(post("/order")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(requestDto)))

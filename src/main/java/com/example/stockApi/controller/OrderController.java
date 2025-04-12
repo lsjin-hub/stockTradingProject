@@ -9,7 +9,7 @@ import com.example.stockApi.dto.OrderRequestDto;
 import com.example.stockApi.dto.OrderResponseDto;
 import com.example.stockApi.service.OrderService;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 public class OrderController {
