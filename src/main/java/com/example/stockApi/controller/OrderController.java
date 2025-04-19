@@ -61,30 +61,13 @@ public class OrderController {
             );
         }
         
-        // 사용자/주식 ID 체크 로직
-        boolean userIdOk = true;
-        boolean stockCodeOk = true;
-        
-        if (!userIdOk) {
-        	return ResponseEntity.badRequest().body(
-            		OrderResponseDto.builder()
-            		.orderId(null)
-            		.message("유효하지 않은 사용자 ID")
-            		.build()
-            );
-        }
-
-        if (!stockCodeOk) {
-        	return ResponseEntity.badRequest().body(
-            		OrderResponseDto.builder()
-            		.orderId(null)
-            		.message("유효하지 않은 주식 ID")
-            		.build()
-            );
-        }
-
         // service 호출
         OrderResponseDto response = orderService.createOrder(request);
+        
+        if (response.getOrderId() == null) {
+            return ResponseEntity.badRequest().body(response);
+        }
+        
         System.out.println("response" + response);
         
         return ResponseEntity.status(HttpStatus.OK).body(response);

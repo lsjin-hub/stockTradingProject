@@ -1,6 +1,7 @@
+DELETE FROM amount_of_stock;
+DELETE FROM account;
+DELETE FROM stock;
 DELETE FROM `user`;
-DELETE FROM `stock`;
-
 -- user
 INSERT INTO `user` (user_id,user_name,create_date_time,update_date_time) VALUES ('aaaaa', '사용자1', NOW(), NOW());
 INSERT INTO `user` (user_id,user_name,create_date_time,update_date_time) VALUES ('bbbbb', '사용자2', NOW(), NOW());

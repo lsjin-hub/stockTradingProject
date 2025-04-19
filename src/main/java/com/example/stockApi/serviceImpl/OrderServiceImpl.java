@@ -36,7 +36,8 @@ public class OrderServiceImpl implements OrderService{
     public OrderResponseDto createOrder(OrderRequestDto requestDto) {
     	
     	// 1. 계좌 조회
-    	Account account = accountRepository.findByUserId(requestDto.getUserId()).orElseThrow(() -> new IllegalArgumentException("계좌 정보 없음"));
+    	Optional<Account> accountOpt = accountRepository.findByUserId(requestDto.getUserId());
+    	Account account = accountOpt.get();
     	
     	// 2. 보유 주식 조회
     	Optional<AmountOfStock> stockOpt = amountOfStockRepository
@@ -50,7 +51,7 @@ public class OrderServiceImpl implements OrderService{
         	// 매입인 경우
             if (account.getActiveBalance() < totalPrice) {
                 return OrderResponseDto.builder()
-                    .message("잔고 부족")
+                    .message("매입 금액이 부족")
                     .build();
             }
         } else if (requestDto.getOrderType() == OrderType.SELL) {
