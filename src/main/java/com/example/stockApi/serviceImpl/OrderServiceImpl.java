@@ -9,6 +9,7 @@ import com.example.stockApi.dto.OrderRequestDto;
 import com.example.stockApi.dto.OrderResponseDto;
 import com.example.stockApi.entity.Account;
 import com.example.stockApi.entity.AmountOfStock;
+import com.example.stockApi.entity.AmountOfStockId;
 import com.example.stockApi.entity.OrderEntity;
 import com.example.stockApi.enums.OrderType;
 import com.example.stockApi.repository.AccountRepository;
@@ -41,7 +42,7 @@ public class OrderServiceImpl implements OrderService{
     	
     	// 2. 보유 주식 조회
     	Optional<AmountOfStock> stockOpt = amountOfStockRepository
-    	        .findByUserIdAndStockId(requestDto.getUserId(), requestDto.getStockCode());
+    	        .findByUserIdAndStockId(requestDto.getUserId(), requestDto.getStockId());
 
     	long totalPrice = requestDto.getQuantity() * requestDto.getPrice();
     	System.out.println("totalPrice : "+ totalPrice);
@@ -65,8 +66,45 @@ public class OrderServiceImpl implements OrderService{
     	
         // 4. 주문 등록
     	OrderEntity entity = new OrderEntity();
-		
+    	
+    	entity.setUserId(requestDto.getUserId());
+    	entity.setStockId(requestDto.getStockId());
+    	entity.setOrderType(requestDto.getOrderType());
+    	entity.setQuantity(requestDto.getQuantity());
+    	entity.setPrice(requestDto.getPrice());
+    	
         orderRepository.save(entity);
+        
+        // 5. 변경 수행
+        if (requestDto.getOrderType() == OrderType.BUY) {
+            // 잔고 차감
+            account.setActiveBalance(account.getActiveBalance() - totalPrice);
+
+            // 주식 보유량 증가
+            AmountOfStock amountOfStock = stockOpt.orElseGet(() -> {
+                AmountOfStock newStock = new AmountOfStock();
+                
+                AmountOfStockId newId = new AmountOfStockId();
+                newId.setUserId(requestDto.getUserId());
+                newId.setStockId(requestDto.getStockId());
+                
+                newStock.setId(newId);
+                newStock.setActiveAmount(0L);
+                return newStock;
+            });
+
+            amountOfStock.setActiveAmount(amountOfStock.getActiveAmount() + requestDto.getQuantity());
+            amountOfStockRepository.save(amountOfStock);
+
+        } else if (requestDto.getOrderType() == OrderType.SELL) {
+            // 잔고 증가
+            account.setActiveBalance(account.getActiveBalance() + totalPrice);
+
+            // 주식 보유량 차감
+            AmountOfStock amountOfStock = stockOpt.get(); 
+            amountOfStock.setActiveAmount(amountOfStock.getActiveAmount() - requestDto.getQuantity());
+            amountOfStockRepository.save(amountOfStock);
+        }
 		
 		// 응답
 		return OrderResponseDto.builder()

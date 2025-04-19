@@ -22,6 +22,7 @@ public class AccountRepository {
     		        .setParameter("userId", userId)
     		        .getResultList();
 
-    		    return result.stream().findFirst(); // 없으면 Optional.empty()
+    	 return result.stream().findFirst(); // 없으면 Optional.empty()
     }
+
 }

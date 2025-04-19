@@ -34,7 +34,7 @@ public class OrderController {
             );
         }
 
-        if (request.getStockCode() == null || request.getStockCode().isBlank()) {
+        if (request.getStockId() == null || request.getStockId().isBlank()) {
             return ResponseEntity.badRequest().body(
             		OrderResponseDto.builder()
             		.orderId(null)

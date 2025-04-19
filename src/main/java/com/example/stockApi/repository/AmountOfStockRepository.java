@@ -17,11 +17,20 @@ public class AmountOfStockRepository {
 
     public Optional<AmountOfStock> findByUserIdAndStockId(String userId, String stockId) {
     	List<AmountOfStock> result = em.createQuery(
-    	        "SELECT a FROM AmountOfStock a WHERE a.userId = :userId AND a.stockId = :stockId", AmountOfStock.class)
+    	        "SELECT a FROM AmountOfStock a WHERE a.id.userId = :userId AND a.id.stockId = :stockId", AmountOfStock.class)
     	        .setParameter("userId", userId)
     	        .setParameter("stockId", stockId)
     	        .getResultList();
 
     	return result.stream().findFirst();
+    }
+    
+    public AmountOfStock save(AmountOfStock stock) {
+        if (stock.getId() == null) {
+            em.persist(stock);
+            return stock;
+        } else {
+            return em.merge(stock);
+        }
     }
 }
