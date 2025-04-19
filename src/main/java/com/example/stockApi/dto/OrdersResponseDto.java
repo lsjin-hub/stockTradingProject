@@ -24,7 +24,7 @@ public class OrdersResponseDto {
         this.setStocks(stocks);
     }
     
-    // Getters and Setters
+	// Getters and Setters
 	public Integer getOrderId() {
 		return orderId;
 	}
