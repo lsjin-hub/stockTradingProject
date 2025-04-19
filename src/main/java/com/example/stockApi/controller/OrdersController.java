@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.stockApi.dto.OrdersResponseDto;
 import com.example.stockApi.entity.OrdersEntity;
 import com.example.stockApi.mapper.OrdersMapper;
 import com.example.stockApi.service.OrdersService;
-import com.exmaple.stockApi.dto.OrdersResponseDto;
 
 @RestController
 public class OrdersController {

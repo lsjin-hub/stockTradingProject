@@ -3,10 +3,10 @@ package com.example.stockApi.mapper;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.stockApi.dto.OrdersResponseDto;
+import com.example.stockApi.dto.StocksDto;
 import com.example.stockApi.entity.OrdersEntity;
 import com.example.stockApi.entity.StockEntity;
-import com.exmaple.stockApi.dto.OrdersResponseDto;
-import com.exmaple.stockApi.dto.StocksDto;
 
 public class OrdersMapper {
 	// OrdersEntity 리스트를 OrderResponseDto 리스트로 변환
