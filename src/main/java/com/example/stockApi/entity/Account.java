@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,4 +30,8 @@ public class Account {
 
     @Column(name = "active_balance")
     private Long activeBalance;
+    
+    @Version
+    @Column(name = "version")
+    private Long version;	// 락 버전
 }

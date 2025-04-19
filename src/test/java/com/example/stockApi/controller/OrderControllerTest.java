@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.stockApi.dto.OrderRequestDto;
@@ -17,6 +18,8 @@ import com.example.stockApi.dto.OrderResponseDto;
 import com.example.stockApi.enums.OrderType;
 import com.example.stockApi.service.OrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.transaction.Transactional;
 
 @SuppressWarnings("removal")
 @SpringBootTest
@@ -29,7 +32,7 @@ public class OrderControllerTest {
     @Autowired
     private ObjectMapper objectMapper; 
 
-    @MockBean
+    @Autowired
     private OrderService orderService;
 	
 	// 200
@@ -37,10 +40,10 @@ public class OrderControllerTest {
 	void shouldReturn200WhenCreateOrder() throws Exception {
 		OrderRequestDto requestDto = new OrderRequestDto();
 		requestDto.setUserId("aaaaa");
-        requestDto.setStockCode("005930");
+        requestDto.setStockId("005930");
         requestDto.setOrderType(OrderType.BUY);
-        requestDto.setQuantity(1);
-        requestDto.setPrice(56000);
+        requestDto.setQuantity(1L);
+        requestDto.setPrice(56000L);
         
         System.out.println("test::::userId : " + requestDto.getUserId());
         
@@ -66,10 +69,10 @@ public class OrderControllerTest {
 	void shouldReturn400WhenCreateOrderByInvalidOrderID() throws Exception {
 		OrderRequestDto invalidDto = new OrderRequestDto();
 	    invalidDto.setUserId(""); // 빈 값
-	    invalidDto.setStockCode("005930");
+	    invalidDto.setStockId("005930");
 	    invalidDto.setOrderType(OrderType.BUY);
-	    invalidDto.setQuantity(10);
-	    invalidDto.setPrice(72000);
+	    invalidDto.setQuantity(10L);
+	    invalidDto.setPrice(72000L);
 
 	    mockMvc.perform(post("/order")
 	                    .contentType("application/json")
@@ -84,10 +87,10 @@ public class OrderControllerTest {
 	void shouldReturn400WhenCreateOrderByInvalidStockID() throws Exception{
 		OrderRequestDto invalidDto = new OrderRequestDto();
 		invalidDto.setUserId("11111"); 
-	    invalidDto.setStockCode("");	// 잘못된 주식 코드
+	    invalidDto.setStockId("");	// 잘못된 주식 코드
 	    invalidDto.setOrderType(OrderType.BUY);
-	    invalidDto.setQuantity(10);
-	    invalidDto.setPrice(72000);
+	    invalidDto.setQuantity(10L);
+	    invalidDto.setPrice(72000L);
 
 	    mockMvc.perform(post("/order")
 	                    .contentType("application/json")
@@ -102,10 +105,10 @@ public class OrderControllerTest {
 	void shouldReturn400WhenCreateOrderByInvalidBalance() throws Exception{
 		OrderRequestDto invalidDto = new OrderRequestDto();
 		invalidDto.setUserId("aaaaa"); 
-	    invalidDto.setStockCode("005930");	
+	    invalidDto.setStockId("005930");	
 	    invalidDto.setOrderType(OrderType.BUY);
-	    invalidDto.setQuantity(1000);
-	    invalidDto.setPrice(72000);
+	    invalidDto.setQuantity(1000L);
+	    invalidDto.setPrice(72000L);
 
 	    Mockito.when(orderService.createOrder(Mockito.any()))
         		.thenReturn(OrderResponseDto.builder()
@@ -126,10 +129,10 @@ public class OrderControllerTest {
 	void shouldReturn400WhenCreateOrderByInvalidQuantity() throws Exception{
 		OrderRequestDto invalidDto = new OrderRequestDto();
 		invalidDto.setUserId("aaaaa"); 
-	    invalidDto.setStockCode("005930");	
+	    invalidDto.setStockId("005930");	
 	    invalidDto.setOrderType(OrderType.SELL);
-	    invalidDto.setQuantity(10);
-	    invalidDto.setPrice(72000);
+	    invalidDto.setQuantity(10L);
+	    invalidDto.setPrice(72000L);
 	    
 	    Mockito.when(orderService.createOrder(Mockito.any()))
 	       .thenReturn(OrderResponseDto.builder()
@@ -150,10 +153,10 @@ public class OrderControllerTest {
 	void shouldReturn400WhenCreateOrderByInvalidPrice() throws Exception{
 		OrderRequestDto invalidDto = new OrderRequestDto();
 		invalidDto.setUserId("aaaaa"); 
-	    invalidDto.setStockCode("005930");	
+	    invalidDto.setStockId("005930");	
 	    invalidDto.setOrderType(OrderType.BUY);
-	    invalidDto.setQuantity(10);
-	    invalidDto.setPrice(-10);
+	    invalidDto.setQuantity(10L);
+	    invalidDto.setPrice(-10L);
 
 	    mockMvc.perform(post("/order")
 	                    .contentType("application/json")
@@ -161,4 +164,24 @@ public class OrderControllerTest {
 	            .andExpect(status().isBadRequest())
 	            .andExpect(jsonPath("$.message").value("유효하지 않은 금액"));
 	}
+	
+	@Test
+//	@Transactional
+//	@Rollback(false)
+//	@Disabled
+    void shouldInsertRealDataIntoDatabase() {
+		try {
+	        OrderRequestDto requestDto = new OrderRequestDto();
+	        requestDto.setUserId("aaaaa");
+	        requestDto.setStockId("005930");
+	        requestDto.setOrderType(OrderType.BUY);
+	        requestDto.setQuantity(1L);
+	        requestDto.setPrice(56000L);
+	
+	        OrderResponseDto response = orderService.createOrder(requestDto);
+	        System.out.println("주문 결과: " + response);
+		} catch (Exception e) {
+	        e.printStackTrace(); // 내부 예외 확인
+	    }
+    }
 }

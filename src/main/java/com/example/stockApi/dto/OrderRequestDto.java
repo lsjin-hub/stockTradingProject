@@ -13,9 +13,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OrderRequestDto {
 	private String userId;
-	private String stockCode;
+	private String stockId;
     private OrderType orderType;
-    private Integer quantity;
-    private Integer price;
+    private Long quantity;
+    private Long price;
   
 }
